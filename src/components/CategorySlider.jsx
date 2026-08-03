@@ -12,19 +12,15 @@ export default function CategorySlider({
   onSelectCategory,
   products = [] 
 }) {
-  // Multiply categories array so loop=true is 100% smooth without any console warnings
+  // Multiply categories array so loop=true is 100% smooth from start
   const displayCategories = useMemo(() => {
     if (!categories || categories.length === 0) return [];
-    if (categories.length === 1) return categories; // Only 1 item ("Tất cả"), no loop needed
-    
     let list = [...categories];
     while (list.length < 24) {
       list = [...list, ...categories];
     }
     return list;
   }, [categories]);
-
-  const canLoop = displayCategories.length >= 12;
 
   // Map category to a representative thumbnail image (first product in category or red daruma mascot)
   const getCategoryIcon = (catName) => {
@@ -44,12 +40,12 @@ export default function CategorySlider({
 
         <Swiper
           modules={[Autoplay, Navigation]}
-          autoplay={canLoop ? {
+          autoplay={{
             delay: 0,
             disableOnInteraction: false,
             pauseOnMouseEnter: true,
-          } : false}
-          loop={canLoop}
+          }}
+          loop={true}
           speed={8000}
           slidesPerView={3}
           spaceBetween={14}

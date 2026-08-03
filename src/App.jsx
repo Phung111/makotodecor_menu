@@ -7,6 +7,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 
 import { fetchGoogleSheetRows } from './services/googleSheetService';
 import { groupProductsByName } from './utils/productTransformer';
+import { initAntiInspect } from './utils/antiInspect';
 
 export default function App() {
   // Read Sheet URL from .env variable VITE_GOOGLE_SHEET_URL
@@ -17,6 +18,12 @@ export default function App() {
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Initialize Anti-Inspect if enabled in .env
+  useEffect(() => {
+    const cleanup = initAntiInspect();
+    return cleanup;
+  }, []);
 
   // Sync theme with HTML document root element
   useEffect(() => {
