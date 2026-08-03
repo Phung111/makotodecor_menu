@@ -45,7 +45,7 @@ export default function HomePage({ products = [], loading = false, onRefresh }) 
       />
 
       {/* Main Header / Search Filter Bar */}
-      <section className="relative overflow-hidden pt-6 pb-12 px-4 sm:px-6 lg:px-8 border-b transition-colors duration-300 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-b from-orange-50/50 via-white to-gray-50 dark:from-[#181216] dark:via-[#111118] dark:to-[#0f0f13]">
+      <section className="relative overflow-hidden py-6 sm:py-8 px-4 sm:px-6 lg:px-8 border-b transition-colors duration-300 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-b from-orange-50/50 via-white to-gray-50 dark:from-[#181216] dark:via-[#111118] dark:to-[#0f0f13]">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -114,7 +114,7 @@ export default function HomePage({ products = [], loading = false, onRefresh }) 
       />
 
       {/* Main Product Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">

@@ -32,7 +32,7 @@ export default function CategorySlider({
   };
 
   return (
-    <section id="category" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+    <section id="category" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       {/* Swiper Category Carousel */}
       <div className="relative">
         <div className="absolute left-0 top-0 w-8 sm:w-16 h-full bg-gradient-to-r from-gray-50 dark:from-[#0f0f13] via-transparent to-transparent z-10 pointer-events-none" />

@@ -41,7 +41,7 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
   };
 
   return (
-    <section id="banner" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10 sm:pb-14 mb-4 sm:mb-6">
+    <section id="banner" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-4 sm:pb-6">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:h-[460px] lg:h-[500px]">
         
         {/* Left Column: Introduce Slide (7 cols on md) */}
