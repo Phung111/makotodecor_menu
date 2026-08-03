@@ -1,0 +1,123 @@
+import React, { useMemo } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation } from 'swiper/modules';
+import { handleImageError, DEFAULT_FALLBACK_IMAGE } from '../utils/imageFallback';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+export default function CategorySlider({ 
+  categories = [], 
+  selectedCategory = 'Tất cả', 
+  onSelectCategory,
+  products = [] 
+}) {
+  // Multiply categories array so loop=true is 100% smooth without any console warnings
+  const displayCategories = useMemo(() => {
+    if (!categories || categories.length === 0) return [];
+    if (categories.length === 1) return categories; // Only 1 item ("Tất cả"), no loop needed
+    
+    let list = [...categories];
+    while (list.length < 24) {
+      list = [...list, ...categories];
+    }
+    return list;
+  }, [categories]);
+
+  const canLoop = displayCategories.length >= 12;
+
+  // Map category to a representative thumbnail image (first product in category or red daruma mascot)
+  const getCategoryIcon = (catName) => {
+    if (catName === 'Tất cả') {
+      return 'https://res.cloudinary.com/cloudinarymen/image/upload/v1750352608/makotodecor/backgrounds/Pngtree_mascot_japan_red_daruma_6600704_kfew8w.png';
+    }
+    const matchedProduct = products.find(p => p.category === catName || p.subcategory === catName);
+    return matchedProduct?.thumbnail || 'https://res.cloudinary.com/cloudinarymen/image/upload/v1750352608/makotodecor/backgrounds/Pngtree_mascot_japan_red_daruma_6600704_kfew8w.png';
+  };
+
+  return (
+    <section id="category" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+      {/* Swiper Category Carousel */}
+      <div className="relative">
+        <div className="absolute left-0 top-0 w-8 sm:w-16 h-full bg-gradient-to-r from-gray-50 dark:from-[#0f0f13] via-transparent to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 w-8 sm:w-16 h-full bg-gradient-to-l from-gray-50 dark:from-[#0f0f13] via-transparent to-transparent z-10 pointer-events-none" />
+
+        <Swiper
+          modules={[Autoplay, Navigation]}
+          autoplay={canLoop ? {
+            delay: 0,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          } : false}
+          loop={canLoop}
+          speed={8000}
+          slidesPerView={3}
+          spaceBetween={14}
+          breakpoints={{
+            480: {
+              slidesPerView: 4,
+              spaceBetween: 16,
+            },
+            768: {
+              slidesPerView: 5,
+              spaceBetween: 20,
+            },
+            1024: {
+              slidesPerView: 6,
+              spaceBetween: 24,
+            },
+            1280: {
+              slidesPerView: 7,
+              spaceBetween: 24,
+            },
+          }}
+          style={{
+            '--swiper-wrapper-transition-timing-function': 'linear',
+          }}
+          className="w-full !py-3 !px-1"
+        >
+          {displayCategories.map((catName, index) => {
+            const isSelected = selectedCategory === catName;
+            const iconUrl = getCategoryIcon(catName);
+
+            return (
+              <SwiperSlide key={index} className="group">
+                <div
+                  onClick={() => onSelectCategory && onSelectCategory(catName)}
+                  className={`bg-white dark:bg-[#15151f] aspect-square rounded-2xl p-3 sm:p-4 text-center shadow-sm hover:shadow-xl transition-all cursor-pointer duration-300 transform hover:-translate-y-2 border flex flex-col items-center justify-center ${
+                    isSelected
+                      ? 'border-red-500 ring-2 ring-red-500/40 bg-red-50/40 dark:bg-red-950/20'
+                      : 'border-gray-200/80 dark:border-gray-800/80'
+                  }`}
+                >
+                  <div className="relative w-full h-full flex justify-center items-center flex-col">
+                    {/* Circle Background */}
+                    <div className="absolute aspect-square rounded-full h-[70%] bg-gray-100 dark:bg-gray-800/60 opacity-80 pointer-events-none" />
+                    
+                    {/* Category Mascot / Thumbnail Image */}
+                    <img
+                      src={iconUrl}
+                      alt={catName}
+                      className="object-contain h-[65%] w-[65%] transition-all duration-300 group-hover:-translate-y-1.5 z-10"
+                      onError={(e) => handleImageError(e)}
+                    />
+                    
+                    {/* Category Label */}
+                    <h3 className={`font-bold text-xs sm:text-sm z-10 truncate max-w-full mt-1.5 transition-colors ${
+                      isSelected
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-gray-800 dark:text-gray-200 group-hover:text-red-600 dark:group-hover:text-red-400'
+                    }`}>
+                      {catName}
+                    </h3>
+                  </div>
+                </div>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </div>
+
+    </section>
+  );
+}

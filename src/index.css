@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+@variant dark (.dark &);
+
+
+
+
+@layer base {
+  :root {
+    --color-primary: #c23b22;
+    --color-primary-dark: #9e2a1b;
+    --color-gold: #d4af37;
+  }
+
+  /* Global Cursor Pointer for All Interactive Elements */
+  button,
+  a,
+  select,
+  summary,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    cursor: pointer;
+  }
+
+  /* Default Light Mode */
+  html {
+    color-scheme: light;
+  }
+
+  /* Dark Mode */
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: #fcfbfa;
+    color: #1f2937;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body,
+  html.dark body {
+    background-color: #0f0f13;
+    color: #f3f4f6;
+  }
+}
+
+/* Glass & Card Effects - Light Theme */
+.glass-effect-light {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06);
+}
+
+/* Glass & Card Effects - Dark Theme */
+.dark .glass-effect-light,
+.glass-effect-dark {
+  background: rgba(22, 22, 34, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .gold-gradient-text {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.crimson-gradient-bg {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+}
+
+.card-hover-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 30px -10px rgba(220, 38, 38, 0.2);
+}
+
+/* Swiper custom navigation buttons - Modern Glassmorphism */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #ffffff !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.25s ease !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: rgba(220, 38, 38, 0.9) !important;
+  border-color: rgba(239, 68, 68, 0.8) !important;
+  transform: scale(1.08) !important;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4) !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #dc2626 !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0f0f13;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2a2a38;
+}
+
+/* Maneki Neko Animated Cat Mascot Sprite from makotodecor_fe_react */
+.catmobile,
+.catpc,
+.cat-mascot {
+  width: 50px;
+  height: 63px;
+  margin: 0 auto;
+  object-fit: contain;
+  background-image: url('https://res.cloudinary.com/cloudinarymen/image/upload/v1743358607/makotodecor/backgrounds/catmobile_jmmbjw.png');
+  animation: moveXmobile 1s steps(32) infinite;
+}
+
+@media (min-width: 640px) {
+  .catmobile,
+  .catpc,
+  .cat-mascot {
+    width: 100px;
+    height: 125px;
+    background-image: url('https://res.cloudinary.com/cloudinarymen/image/upload/v1743358609/makotodecor/backgrounds/catpc_y5dnxd.png');
+    animation: moveXpc 1s steps(32) infinite;
+  }
+}
+
+@keyframes moveXpc {
+  from { background-position-x: 0px; }
+  to { background-position-x: -3200px; }
+}
+
+@keyframes moveXmobile {
+  from { background-position-x: 0px; }
+  to { background-position-x: -1600px; }
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #dc2626;
+}
