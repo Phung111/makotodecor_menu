@@ -101,7 +101,7 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
           >
             {/* Text Section */}
             <div className="relative z-10 flex flex-col justify-center gap-1 sm:gap-2 max-w-[60%]">
-              <p className="text-3xl sm:text-4xl font-serif text-[#164332] dark:text-[#9ee6c5] leading-none">
+              <p className="text-lg sm:text-xl font-serif text-[#164332] dark:text-[#9ee6c5] leading-none opacity-80">
                 Bán chạy
               </p>
 
@@ -110,15 +110,13 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
                 <span className="text-[10px] font-black tracking-widest text-gray-800 dark:text-gray-200 leading-none">HOT</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-snug">
-                Bán chạy nhất
+              <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-snug line-clamp-2">
+                {bestSellerProduct?.name || 'Bán chạy nhất'}
               </h3>
 
-              {bestSellerProduct && (
-                <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-1 font-medium">
-                  {bestSellerProduct.name}
-                </p>
-              )}
+              <p className="text-xs sm:text-sm font-medium text-emerald-800 dark:text-emerald-300">
+                Bán chạy nhất
+              </p>
 
               <button
                 className="flex items-center gap-2 cursor-pointer hover:text-red-600 dark:hover:text-red-400 font-semibold text-xs sm:text-sm pt-1 transition-colors text-gray-800 dark:text-gray-200"
@@ -146,8 +144,8 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
           >
             {/* Text Section */}
             <div className="relative z-10 flex flex-col justify-center gap-1 sm:gap-2 max-w-[55%]">
-              <p className="text-3xl sm:text-4xl font-serif text-[#162f4d] dark:text-[#9ebef3] leading-none">
-                Giảm giá
+              <p className="text-lg sm:text-xl font-serif text-[#162f4d] dark:text-[#9ebef3] leading-none opacity-80">
+                Đang giảm giá
               </p>
 
               <div className="flex items-center gap-2 my-1">
@@ -155,15 +153,13 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
                 <span className="text-[10px] font-black tracking-widest text-gray-800 dark:text-gray-200 leading-none">SALE</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-snug">
-                Đang giảm giá
+              <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-snug line-clamp-2">
+                {discountProduct?.name || 'Đang giảm giá'}
               </h3>
 
-              {discountProduct && (
-                <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-1 font-medium">
-                  {discountProduct.name}
-                </p>
-              )}
+              <p className="text-xs sm:text-sm font-medium text-blue-800 dark:text-blue-300">
+                Đang giảm giá
+              </p>
 
               <button
                 className="flex items-center gap-2 cursor-pointer hover:text-red-600 dark:hover:text-red-400 font-semibold text-xs sm:text-sm pt-1 transition-colors text-gray-800 dark:text-gray-200"
