@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs, FreeMode } from 'swiper/modules';
 import { formatVND } from '../utils/productTransformer';
 import { handleImageError, DEFAULT_FALLBACK_IMAGE } from '../utils/imageFallback';
+import { getOptimizedCloudinaryUrl } from '../utils/cloudinary';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -20,8 +21,8 @@ export default function ProductDetailPage({ products = [] }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const zaloPhone = import.meta.env.VITE_ZALO_PHONE || '0900000000';
-  const facebookLink = import.meta.env.VITE_FACEBOOK_LINK || 'https://m.me/makotodecor';
+  const zaloPhone = import.meta.env.VITE_ZALO_PHONE;
+  const facebookLink = import.meta.env.VITE_FACEBOOK_LINK;
 
   const product = products.find(p => p.id === id) || products[0];
 
@@ -103,9 +104,10 @@ export default function ProductDetailPage({ products = [] }) {
                 {images.map((imgUrl, idx) => (
                   <SwiperSlide key={idx} className="w-full h-full flex items-center justify-center bg-gray-900 dark:bg-gray-950">
                     <img
-                      src={imgUrl || DEFAULT_FALLBACK_IMAGE}
+                      src={getOptimizedCloudinaryUrl(imgUrl, { width: 800, height: 800, crop: 'fill' }) || DEFAULT_FALLBACK_IMAGE}
                       alt={`${product.name} - Ảnh ${idx + 1}`}
-                      className="w-full h-full object-contain"
+                      loading="lazy"
+                      className="w-full h-full object-cover"
                       onError={(e) => handleImageError(e)}
                     />
                   </SwiperSlide>
@@ -142,8 +144,9 @@ export default function ProductDetailPage({ products = [] }) {
                         activeImageIndex === idx ? 'border-red-500 scale-95 shadow-md' : 'border-gray-200 dark:border-gray-800 opacity-60 hover:opacity-100'
                       }`}>
                         <img 
-                          src={imgUrl || DEFAULT_FALLBACK_IMAGE} 
+                          src={getOptimizedCloudinaryUrl(imgUrl, { width: 150, height: 150, crop: 'fill' }) || DEFAULT_FALLBACK_IMAGE} 
                           alt="thumb" 
+                          loading="lazy"
                           className="w-full h-full object-cover" 
                           onError={(e) => handleImageError(e)}
                         />

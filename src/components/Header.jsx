@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, MessageCircle } from 'lucide-react';
+import { Sun, Moon, MessageCircle, UploadCloud } from 'lucide-react';
 
 const FacebookIcon = (props) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" {...props}>
@@ -7,9 +7,10 @@ const FacebookIcon = (props) => (
   </svg>
 );
 
-export default function Header({ theme, onToggleTheme }) {
-  const zaloPhone = import.meta.env.VITE_ZALO_PHONE || '0900000000';
-  const facebookLink = import.meta.env.VITE_FACEBOOK_LINK || 'https://m.me/makotodecor';
+export default function Header({ theme, onToggleTheme, onOpenCloudinaryModal }) {
+  const zaloPhone = import.meta.env.VITE_ZALO_PHONE;
+  const facebookLink = import.meta.env.VITE_FACEBOOK_LINK;
+  const isCloudinaryToolEnabled = import.meta.env.VITE_ENABLE_CLOUDINARY_TOOL === 'true';
 
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md border-b transition-colors duration-300 bg-white/80 dark:bg-[#121218]/80 border-gray-200/80 dark:border-gray-800/80 shadow-sm dark:shadow-2xl">
@@ -24,9 +25,21 @@ export default function Header({ theme, onToggleTheme }) {
           />
         </a>
 
-        {/* Action Buttons: 1. FB -> 2. Zalo -> 3. Theme Toggle (Icon Only) */}
-        <div className="flex items-center space-x-3">
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-2.5">
           
+          {/* Cloudinary Batch Upload Tool Button */}
+          {isCloudinaryToolEnabled && (
+            <button
+              onClick={onOpenCloudinaryModal}
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-red-50 hover:bg-red-100 dark:bg-red-950/60 dark:hover:bg-red-900/60 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800/50 transition-all shadow-sm cursor-pointer"
+              title="Mở Tool Tải & Tạo Link Ảnh Cloudinary Hàng Loạt"
+            >
+              <UploadCloud className="w-4 h-4 text-red-500 shrink-0" />
+              <span className="hidden sm:inline">Tool Tải Ảnh</span>
+            </button>
+          )}
+
           {/* 1. Facebook Button */}
           <a
             href={facebookLink}
@@ -35,7 +48,7 @@ export default function Header({ theme, onToggleTheme }) {
             className="flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1877F2] hover:bg-[#166fe5] text-white shadow-md shadow-blue-600/20 border border-blue-400/30 transition-all cursor-pointer"
           >
             <FacebookIcon />
-            <span className="hidden sm:inline">Nhắn tin Facebook</span>
+            <span className="hidden sm:inline">Facebook</span>
           </a>
 
           {/* 2. Zalo Button */}
@@ -46,7 +59,7 @@ export default function Header({ theme, onToggleTheme }) {
             className="flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-600/30 border border-blue-200 dark:border-blue-500/30 transition-all shadow-sm cursor-pointer"
           >
             <MessageCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Tư vấn Zalo</span>
+            <span className="hidden sm:inline">Zalo</span>
           </a>
 
           {/* 3. Light / Dark Mode Toggle Button (Icon ONLY) */}

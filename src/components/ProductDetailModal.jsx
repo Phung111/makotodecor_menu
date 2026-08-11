@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs, FreeMode } from 'swiper/modules';
 import { formatVND } from '../utils/productTransformer';
 import { handleImageError, DEFAULT_FALLBACK_IMAGE } from '../utils/imageFallback';
+import { getOptimizedCloudinaryUrl } from '../utils/cloudinary';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -19,8 +20,8 @@ const FacebookIcon = (props) => (
 export default function ProductDetailModal({ product, onClose }) {
   if (!product) return null;
 
-  const zaloPhone = import.meta.env.VITE_ZALO_PHONE || '0900000000';
-  const facebookLink = import.meta.env.VITE_FACEBOOK_LINK || 'https://m.me/makotodecor';
+  const zaloPhone = import.meta.env.VITE_ZALO_PHONE;
+  const facebookLink = import.meta.env.VITE_FACEBOOK_LINK;
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -100,11 +101,11 @@ export default function ProductDetailModal({ product, onClose }) {
                   {images.map((imgUrl, idx) => (
                     <SwiperSlide key={idx} className="w-full h-full flex items-center justify-center bg-gray-900 dark:bg-gray-950">
                       <Image
-                        src={imgUrl || DEFAULT_FALLBACK_IMAGE}
+                        src={getOptimizedCloudinaryUrl(imgUrl, { width: 800, height: 800, crop: 'fill' }) || DEFAULT_FALLBACK_IMAGE}
                         alt={`${product.name} - Ảnh ${idx + 1}`}
                         rootClassName="w-full h-full flex items-center justify-center"
-                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        className="w-full h-full object-contain cursor-pointer"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        className="w-full h-full object-cover cursor-pointer"
                         onError={(e) => handleImageError(e)}
                         preview={{
                           cover: (
@@ -113,7 +114,7 @@ export default function ProductDetailModal({ product, onClose }) {
                               <span>Xem chi tiết</span>
                             </div>
                           ),
-                          src: imgUrl || DEFAULT_FALLBACK_IMAGE,
+                          src: imgUrl || DEFAULT_FALLBACK_IMAGE, // Keep ORIGINAL full resolution URL for high quality preview
                         }}
                       />
                     </SwiperSlide>
@@ -160,8 +161,9 @@ export default function ProductDetailModal({ product, onClose }) {
                         activeImageIndex === idx ? 'border-red-500 scale-95 shadow-md' : 'border-gray-200 dark:border-gray-800 opacity-60 hover:opacity-100'
                       }`}>
                         <img 
-                          src={imgUrl || DEFAULT_FALLBACK_IMAGE} 
+                          src={getOptimizedCloudinaryUrl(imgUrl, { width: 150, height: 150, crop: 'fill' }) || DEFAULT_FALLBACK_IMAGE} 
                           alt="thumb" 
+                          loading="lazy"
                           className="w-full h-full object-cover" 
                           onError={(e) => handleImageError(e)}
                         />

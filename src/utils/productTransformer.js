@@ -69,6 +69,11 @@ export function groupProductsByName(rows = []) {
         existingProduct.banner = rawBanner;
       }
       
+      // If row.Anh_Dai_Dien is empty, reuse primary product thumbnail
+      if (!row.Anh_Dai_Dien && existingProduct.thumbnail) {
+        variantItem.image = existingProduct.thumbnail;
+      }
+
       // Add variant
       existingProduct.variants.push(variantItem);
 

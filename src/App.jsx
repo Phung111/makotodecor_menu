@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import CloudinaryUploadModal from './components/CloudinaryUploadModal';
 
 import { fetchGoogleSheetRows } from './services/googleSheetService';
 import { groupProductsByName } from './utils/productTransformer';
@@ -11,13 +12,16 @@ import { initAntiInspect } from './utils/antiInspect';
 
 export default function App() {
   // Read Sheet URL from .env variable VITE_GOOGLE_SHEET_URL
-  const sheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL || '';
+  const sheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
   // Theme state: Default is 'light' as requested
   const [theme, setTheme] = useState(() => localStorage.getItem('MAKOTO_THEME') || 'light');
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Cloudinary Upload Tool Modal State
+  const [isCloudinaryModalOpen, setIsCloudinaryModalOpen] = useState(false);
 
   // Initialize Anti-Inspect if enabled in .env
   useEffect(() => {
@@ -65,6 +69,7 @@ export default function App() {
         <Header
           theme={theme}
           onToggleTheme={toggleTheme}
+          onOpenCloudinaryModal={() => setIsCloudinaryModalOpen(true)}
         />
 
         {/* Page Routes */}
@@ -87,6 +92,12 @@ export default function App() {
 
         {/* Footer */}
         <Footer />
+
+        {/* Cloudinary Batch Upload Tool Modal */}
+        <CloudinaryUploadModal
+          isOpen={isCloudinaryModalOpen}
+          onClose={() => setIsCloudinaryModalOpen(false)}
+        />
 
       </div>
     </BrowserRouter>

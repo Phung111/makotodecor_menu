@@ -3,19 +3,17 @@ import { ArrowRight } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
 import { handleImageError, DEFAULT_FALLBACK_IMAGE } from '../utils/imageFallback';
+import { getOptimizedCloudinaryUrl } from '../utils/cloudinary';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 
 export default function HeroBanner({ products = [], onSelectProduct }) {
-  // Read slides from .env or fallback to default Cloudinary slides
-  const envSlidesStr = import.meta.env.VITE_HERO_SLIDES || '';
+  // Read slides directly from .env variable VITE_HERO_SLIDES
+  const envSlidesStr = import.meta.env.VITE_HERO_SLIDES;
   const slides = envSlidesStr
     ? envSlidesStr.split(',').map(s => s.trim()).filter(Boolean)
-    : [
-        'https://res.cloudinary.com/cloudinarymen/image/upload/v1743358609/makotodecor/backgrounds/next2_i2c7nj.png',
-        'https://res.cloudinary.com/cloudinarymen/image/upload/v1743358611/makotodecor/backgrounds/next3_ubguni.png'
-      ];
+    : [];
 
   // Best seller product (Product marked as "Bán chạy" in Google Sheet Banner column)
   const bestSellerProduct = products.find(p => p.banner && p.banner.toLowerCase().includes('bán chạy')) 
@@ -73,8 +71,9 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
                 {slides.map((slideUrl, index) => (
                   <SwiperSlide key={index} className="flex items-center justify-center">
                     <img
-                      src={slideUrl}
+                      src={getOptimizedCloudinaryUrl(slideUrl, { width: 1200, crop: 'limit' })}
                       alt={`slide-${index}`}
+                      loading="lazy"
                       className="object-contain h-full w-full max-h-[380px]"
                       onError={(e) => handleImageError(e)}
                     />
@@ -129,8 +128,9 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
             {/* Right Product Image (No border, no background container) */}
             <div className="absolute top-0 right-0 h-full w-[45%] flex justify-end items-center overflow-hidden">
               <img
-                src={bestSellerProduct?.thumbnail || DEFAULT_FALLBACK_IMAGE}
+                src={getOptimizedCloudinaryUrl(bestSellerProduct?.thumbnail, { width: 600, height: 600, crop: 'fill' }) || DEFAULT_FALLBACK_IMAGE}
                 alt={bestSellerProduct?.name || 'Bán chạy nhất'}
+                loading="lazy"
                 className="object-cover h-full w-full rounded-r-2xl group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => handleImageError(e)}
               />
@@ -172,8 +172,9 @@ export default function HeroBanner({ products = [], onSelectProduct }) {
             {/* Right Product Image (No border, no background container) */}
             <div className="absolute top-0 right-0 h-full w-[45%] flex justify-end items-center overflow-hidden">
               <img
-                src={discountProduct?.thumbnail || DEFAULT_FALLBACK_IMAGE}
+                src={getOptimizedCloudinaryUrl(discountProduct?.thumbnail, { width: 600, height: 600, crop: 'fill' }) || DEFAULT_FALLBACK_IMAGE}
                 alt={discountProduct?.name || 'Đang giảm giá'}
+                loading="lazy"
                 className="object-cover h-full w-full rounded-r-2xl group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => handleImageError(e)}
               />

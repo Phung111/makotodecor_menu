@@ -2,6 +2,7 @@ import React from 'react';
 import { Layers, Tag, AlertCircle, Eye } from 'lucide-react';
 import { formatVND } from '../utils/productTransformer';
 import { handleImageError, DEFAULT_FALLBACK_IMAGE } from '../utils/imageFallback';
+import { getOptimizedCloudinaryUrl } from '../utils/cloudinary';
 
 export default function ProductCard({ product, onSelectProduct }) {
   const variantCount = product.variants ? product.variants.length : 1;
@@ -25,7 +26,7 @@ export default function ProductCard({ product, onSelectProduct }) {
       {/* Clean Product Image */}
       <div className="relative aspect-4/3 w-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
         <img
-          src={product.thumbnail || DEFAULT_FALLBACK_IMAGE}
+          src={getOptimizedCloudinaryUrl(product.thumbnail, { width: 500, height: 375, crop: 'fill' }) || DEFAULT_FALLBACK_IMAGE}
           alt={product.name}
           className={`w-full h-full object-cover transition-transform duration-500 ${
             isOutOfStock ? 'grayscale-30 opacity-75' : 'group-hover:scale-105'

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
 import { handleImageError, DEFAULT_FALLBACK_IMAGE } from '../utils/imageFallback';
+import { getOptimizedCloudinaryUrl } from '../utils/cloudinary';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -92,8 +93,9 @@ export default function CategorySlider({
                     
                     {/* Category Mascot / Thumbnail Image */}
                     <img
-                      src={iconUrl}
+                      src={getOptimizedCloudinaryUrl(iconUrl, { width: 250, height: 250, crop: 'fit' })}
                       alt={catName}
+                      loading="lazy"
                       className="object-contain h-[65%] w-[65%] transition-all duration-300 group-hover:-translate-y-1.5 z-10"
                       onError={(e) => handleImageError(e)}
                     />
