@@ -28,6 +28,21 @@ export default function ProductDetailPage({ products = [] }) {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [mainSwiper, setMainSwiper] = useState(null);
+
+  const handleSelectVariant = (idx) => {
+    setSelectedVariantIndex(idx);
+    const targetVariant = product?.variants?.[idx];
+    if (targetVariant && targetVariant.image) {
+      const imgIdx = product?.images?.findIndex((img) => img === targetVariant.image);
+      if (imgIdx !== undefined && imgIdx !== -1) {
+        setActiveImageIndex(imgIdx);
+        if (mainSwiper && !mainSwiper.destroyed) {
+          mainSwiper.slideTo(imgIdx);
+        }
+      }
+    }
+  };
 
   if (!product) {
     return (
@@ -75,6 +90,7 @@ export default function ProductDetailPage({ products = [] }) {
             {/* Main Image Square Area */}
             <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-900 dark:bg-gray-950 shadow-inner border border-gray-200 dark:border-gray-800">
               <Swiper
+                onSwiper={setMainSwiper}
                 modules={[Navigation, Thumbs]}
                 thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
                 navigation={{
@@ -142,7 +158,7 @@ export default function ProductDetailPage({ products = [] }) {
           {/* Right Column: Details & Variant selector */}
           <div className="p-6 md:p-8 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 min-h-[30px]">
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50 flex items-center space-x-1">
                   <Tag className="w-3 h-3" />
                   <span>{product.category}</span>
@@ -166,7 +182,7 @@ export default function ProductDetailPage({ products = [] }) {
                 {product.name}
               </h1>
 
-              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800 min-h-[108px] flex flex-col justify-center space-y-1">
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800 min-h-[118px] flex flex-col justify-center space-y-1">
                 <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Đơn giá</div>
                 <div className={`text-3xl font-extrabold ${isVariantOutOfStock ? 'text-gray-400 line-through' : 'text-red-600 dark:gold-gradient-text'}`}>
                   {formatVND(selectedVariant.price)}
@@ -184,7 +200,7 @@ export default function ProductDetailPage({ products = [] }) {
                     return (
                       <button
                         key={variant.id}
-                        onClick={() => setSelectedVariantIndex(idx)}
+                        onClick={() => handleSelectVariant(idx)}
                         className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
                           selectedVariantIndex === idx
                             ? isOutOfStock

@@ -42,7 +42,9 @@ export function groupProductsByName(rows = []) {
       note: row.Ghi_Chu || '',
       material: row.Chat_Lieu || '',
       customDesign: row.Thiet_Ke_Rieng || 'Có',
-      shippingFee: row.Phi_Ship || 'Liên hệ'
+      shippingFee: row.Phi_Ship || 'Liên hệ',
+      image: thumbImage,
+      images: galleryImages
     };
 
     if (!groupedMap.has(normalizedKey)) {

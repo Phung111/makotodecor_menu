@@ -25,7 +25,22 @@ export default function ProductDetailModal({ product, onClose }) {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [mainSwiper, setMainSwiper] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const handleSelectVariant = (idx) => {
+    setSelectedVariantIndex(idx);
+    const targetVariant = product.variants[idx];
+    if (targetVariant && targetVariant.image) {
+      const imgIdx = images.findIndex((img) => img === targetVariant.image);
+      if (imgIdx !== -1) {
+        setActiveImageIndex(imgIdx);
+        if (mainSwiper && !mainSwiper.destroyed) {
+          mainSwiper.slideTo(imgIdx);
+        }
+      }
+    }
+  };
 
   const selectedVariant = product.variants[selectedVariantIndex] || product.variants[0];
   const images = product.images && product.images.length > 0 ? product.images : [product.thumbnail];
@@ -42,7 +57,7 @@ export default function ProductDetailModal({ product, onClose }) {
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Modal Container with Max Height & Inner Scroll */}
-      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-white dark:bg-[#14141c] rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700/80 shadow-2xl transition-colors duration-300 z-10">
+      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-white dark:bg-[#14141c] rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700/80 shadow-2xl transition-all duration-300 z-10">
         
         {/* Fixed Close Button - Always visible on mobile & desktop */}
         <button
@@ -54,7 +69,7 @@ export default function ProductDetailModal({ product, onClose }) {
 
         {/* Scrollable Content Body */}
         <div className="overflow-y-auto w-full h-full custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:min-h-[615px]">
           
           {/* Left Column: Image Slider */}
           <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-950/60 flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800/80">
@@ -72,6 +87,7 @@ export default function ProductDetailModal({ product, onClose }) {
               <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-900 dark:bg-gray-950 shadow-inner border border-gray-200 dark:border-gray-800">
                 
                 <Swiper
+                  onSwiper={setMainSwiper}
                   modules={[Navigation, Thumbs]}
                   thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
                   navigation={{
@@ -163,7 +179,7 @@ export default function ProductDetailModal({ product, onClose }) {
             <div className="space-y-4">
               
               {/* Category & Badges */}
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 min-h-[56px]">
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50 flex items-center space-x-1">
                   <Tag className="w-3 h-3" />
                   <span>{product.category}</span>
@@ -193,7 +209,7 @@ export default function ProductDetailModal({ product, onClose }) {
               </h2>
 
               {/* Price Display */}
-              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800/90 min-h-[108px] flex flex-col justify-center space-y-1">
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800/90 min-h-[132px] flex flex-col justify-center space-y-1">
                 <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Đơn giá</div>
                 <div className={`text-3xl font-extrabold ${isVariantOutOfStock ? 'text-gray-400 line-through' : 'text-red-600 dark:gold-gradient-text'}`}>
                   {formatVND(selectedVariant.price)}
@@ -201,14 +217,14 @@ export default function ProductDetailModal({ product, onClose }) {
                 
                 {!isVariantOutOfStock && selectedVariant.wholesalePrice > 0 && (
                   <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold pt-1 flex items-center space-x-1">
-                    <CheckCircle className="w-3.5 h-3.5" />
+                    <CheckCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>Giá sỉ: {formatVND(selectedVariant.wholesalePrice)} áp dụng từ {selectedVariant.minWholesaleQty || 10} sản phẩm</span>
                   </div>
                 )}
 
                 {isVariantOutOfStock && (
                   <div className="text-xs text-rose-600 dark:text-rose-400 font-semibold pt-1 flex items-center space-x-1">
-                    <AlertCircle className="w-3.5 h-3.5" />
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>Phiên bản {selectedVariant.size} hiện đang tạm hết hàng. Quý khách có thể chọn kích thước khác hoặc liên hệ xưởng đặt làm.</span>
                   </div>
                 )}
@@ -225,7 +241,7 @@ export default function ProductDetailModal({ product, onClose }) {
                     return (
                       <button
                         key={variant.id}
-                        onClick={() => setSelectedVariantIndex(idx)}
+                        onClick={() => handleSelectVariant(idx)}
                         className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border relative ${
                           selectedVariantIndex === idx
                             ? isOutOfStock 
