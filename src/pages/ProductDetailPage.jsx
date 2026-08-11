@@ -31,17 +31,49 @@ export default function ProductDetailPage({ products = [] }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [mainSwiper, setMainSwiper] = useState(null);
 
+  const images = product?.images && product.images.length > 0 ? product.images : [product?.thumbnail];
+  const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0];
+  const isVariantOutOfStock = selectedVariant?.isOutOfStock || selectedVariant?.status === 'Hết hàng';
+
+  // Map each variant to its start image index in `images`
+  const getVariantImageIndices = () => {
+    if (!product?.variants) return [];
+    return product.variants.map((v) => {
+      const vImgs = v.images && v.images.length > 0 ? v.images : [v.image];
+      const matchIdx = images.findIndex((img) => vImgs.includes(img) || img === v.image);
+      return matchIdx !== -1 ? matchIdx : 0;
+    });
+  };
+
   const handleSelectVariant = (idx) => {
     setSelectedVariantIndex(idx);
-    const targetVariant = product?.variants?.[idx];
-    if (targetVariant && targetVariant.image) {
-      const imgIdx = product?.images?.findIndex((img) => img === targetVariant.image);
-      if (imgIdx !== undefined && imgIdx !== -1) {
-        setActiveImageIndex(imgIdx);
-        if (mainSwiper && !mainSwiper.destroyed) {
-          mainSwiper.slideTo(imgIdx);
-        }
+    const variantIndices = getVariantImageIndices();
+    const targetImgIdx = variantIndices[idx];
+
+    if (targetImgIdx !== undefined && targetImgIdx !== -1) {
+      setActiveImageIndex(targetImgIdx);
+      if (mainSwiper && !mainSwiper.destroyed) {
+        mainSwiper.slideTo(targetImgIdx);
       }
+    }
+  };
+
+  const handleSlideChange = (activeIndex) => {
+    setActiveImageIndex(activeIndex);
+    if (!product?.variants || product.variants.length <= 1) return;
+
+    const variantIndices = getVariantImageIndices();
+
+    // Find the variant index whose start image index is <= activeIndex (largest match)
+    let bestVariantIdx = 0;
+    for (let i = 0; i < variantIndices.length; i++) {
+      if (variantIndices[i] <= activeIndex) {
+        bestVariantIdx = i;
+      }
+    }
+
+    if (bestVariantIdx !== selectedVariantIndex) {
+      setSelectedVariantIndex(bestVariantIdx);
     }
   };
 
@@ -60,10 +92,6 @@ export default function ProductDetailPage({ products = [] }) {
       </div>
     );
   }
-
-  const selectedVariant = product.variants[selectedVariantIndex] || product.variants[0];
-  const images = product.images && product.images.length > 0 ? product.images : [product.thumbnail];
-  const isVariantOutOfStock = selectedVariant.isOutOfStock || selectedVariant.status === 'Hết hàng';
 
   const zaloMessage = encodeURIComponent(
     `Xin chào Makoto Decor, tôi muốn tư vấn báo giá sản phẩm "${product.name}" - Quy cách/Kích thước: ${selectedVariant.size}.`
@@ -98,7 +126,7 @@ export default function ProductDetailPage({ products = [] }) {
                   prevEl: '.detail-prev-btn',
                   nextEl: '.detail-next-btn',
                 }}
-                onSlideChange={(swiper) => setActiveImageIndex(swiper.activeIndex)}
+                onSlideChange={(swiper) => handleSlideChange(swiper.activeIndex)}
                 className="w-full h-full"
               >
                 {images.map((imgUrl, idx) => (
@@ -117,10 +145,26 @@ export default function ProductDetailPage({ products = [] }) {
               {/* Sleek Custom Navigation Arrows (In-frame, no overflow) */}
               {images.length > 1 && (
                 <>
-                  <button className="detail-prev-btn absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-red-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg active:scale-90">
+                  <button 
+                    onClick={() => {
+                      if (mainSwiper && !mainSwiper.destroyed) {
+                        mainSwiper.slidePrev();
+                      }
+                    }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-red-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg active:scale-90"
+                    title="Ảnh trước"
+                  >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
-                  <button className="detail-next-btn absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-red-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg active:scale-90">
+                  <button 
+                    onClick={() => {
+                      if (mainSwiper && !mainSwiper.destroyed) {
+                        mainSwiper.slideNext();
+                      }
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 hover:bg-red-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg active:scale-90"
+                    title="Ảnh tiếp theo"
+                  >
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </>

@@ -69,8 +69,8 @@ export function groupProductsByName(rows = []) {
         existingProduct.banner = rawBanner;
       }
       
-      // If row.Anh_Dai_Dien is empty, reuse primary product thumbnail
-      if (!row.Anh_Dai_Dien && existingProduct.thumbnail) {
+      // If row.Anh_Dai_Dien and galleryImages are both empty, reuse primary product thumbnail
+      if (!row.Anh_Dai_Dien && galleryImages.length === 0 && existingProduct.thumbnail) {
         variantItem.image = existingProduct.thumbnail;
       }
 
