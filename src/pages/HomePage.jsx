@@ -90,7 +90,7 @@ export default function HomePage({ products = [], loading = false, onRefresh }) 
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tight">
-            DANH MỤC SẢN PHẨM & <span className="text-red-600 dark:gold-gradient-text">BẢNG GIÁ MENU</span>
+            DANH MỤC SẢN PHẨM & <span className="text-red-600 dark:gold-gradient-text">BẢNG GIÁ</span>
           </h1>
 
           <p className="max-w-2xl mx-auto text-sm sm:text-base text-gray-600 dark:text-gray-400 font-medium">
@@ -158,10 +158,23 @@ export default function HomePage({ products = [], loading = false, onRefresh }) 
           </div>
         </div>
 
-        {loading ? (
-          <div className="py-20 text-center space-y-3">
-            <RefreshCw className="w-8 h-8 text-red-500 animate-spin mx-auto" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">Đang tải dữ liệu từ Google Sheet...</p>
+        {loading || products.length === 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[900px]">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div key={idx} className="bg-white dark:bg-[#14141d] rounded-2xl p-4 border border-gray-200/80 dark:border-gray-800/80 animate-pulse space-y-3 shadow-sm">
+                <div className="w-full aspect-[4/3] bg-gray-200/80 dark:bg-gray-800/80 rounded-xl" />
+                <div className="flex items-center space-x-2">
+                  <div className="h-5 bg-red-100 dark:bg-red-950/50 rounded-full w-24" />
+                  <div className="h-5 bg-gray-100 dark:bg-gray-800 rounded-full w-16" />
+                </div>
+                <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded-lg w-3/4" />
+                <div className="h-3.5 bg-gray-100 dark:bg-gray-800/60 rounded w-1/2" />
+                <div className="pt-2 flex items-center justify-between border-t border-gray-100 dark:border-gray-800/60">
+                  <div className="h-6 bg-red-200 dark:bg-red-900/40 rounded-lg w-28" />
+                  <div className="h-8 bg-red-500/20 rounded-xl w-24" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="py-20 glass-effect-light rounded-2xl text-center border border-gray-200 dark:border-gray-800 space-y-3 shadow-sm">

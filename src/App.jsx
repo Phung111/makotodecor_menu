@@ -18,7 +18,7 @@ export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('MAKOTO_THEME') || 'light');
   
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Cloudinary Upload Tool Modal State
   const [isCloudinaryModalOpen, setIsCloudinaryModalOpen] = useState(false);
@@ -60,6 +60,38 @@ export default function App() {
   useEffect(() => {
     loadData(sheetUrl);
   }, [sheetUrl, loadData]);
+
+  // Set history scrollRestoration to manual to prevent browser auto-jumping during async data load
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    const handleScroll = () => {
+      // Save scroll position
+      sessionStorage.setItem('MAKOTO_SCROLL_Y', window.scrollY.toString());
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Restore scroll position after products data is loaded and rendered
+  useEffect(() => {
+    if (!loading && products.length > 0) {
+      const savedY = sessionStorage.getItem('MAKOTO_SCROLL_Y');
+      if (savedY !== null) {
+        const targetY = parseInt(savedY, 10);
+        if (targetY > 0) {
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              window.scrollTo({ top: targetY, behavior: 'instant' });
+            }, 80);
+          });
+        }
+      }
+    }
+  }, [loading, products]);
 
   return (
     <BrowserRouter>
