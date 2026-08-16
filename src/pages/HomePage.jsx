@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Sparkles, RefreshCw, ShoppingBag, Layers } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import ProductDetailModal from '../components/ProductDetailModal';
@@ -6,10 +7,42 @@ import HeroBanner from '../components/HeroBanner';
 import CategorySlider from '../components/CategorySlider';
 
 export default function HomePage({ products = [], loading = false, onRefresh }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('default');
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Auto open product modal if URL contains ?product=ID
+  useEffect(() => {
+    const prodIdParam = searchParams.get('product') || searchParams.get('id') || searchParams.get('sp');
+    if (prodIdParam && products.length > 0) {
+      const matchKey = prodIdParam.trim().toLowerCase();
+      const found = products.find(p => {
+        const pIdMatch = p.id && p.id.toLowerCase() === matchKey;
+        const variantMatch = p.variants && p.variants.some(v => v.id && v.id.toLowerCase() === matchKey);
+        const nameMatch = p.name && p.name.toLowerCase() === matchKey;
+        return pIdMatch || variantMatch || nameMatch;
+      });
+
+      if (found) {
+        setSelectedProduct(found);
+      }
+    }
+  }, [searchParams, products]);
+
+  const handleOpenProduct = (prod) => {
+    setSelectedProduct(prod);
+    if (prod) {
+      const targetId = prod.variants?.[0]?.id || prod.id;
+      setSearchParams({ product: targetId }, { replace: true });
+    }
+  };
+
+  const handleCloseProduct = () => {
+    setSelectedProduct(null);
+    setSearchParams({}, { replace: true });
+  };
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -41,7 +74,7 @@ export default function HomePage({ products = [], loading = false, onRefresh }) 
       {/* Hero Banner Component (Slideshow + Best Seller + Discount Cards) */}
       <HeroBanner 
         products={products} 
-        onSelectProduct={(prod) => setSelectedProduct(prod)} 
+        onSelectProduct={handleOpenProduct} 
       />
 
       {/* Main Header / Search Filter Bar */}
@@ -142,7 +175,7 @@ export default function HomePage({ products = [], loading = false, onRefresh }) 
               <ProductCard
                 key={product.id}
                 product={product}
-                onSelectProduct={setSelectedProduct}
+                onSelectProduct={handleOpenProduct}
               />
             ))}
           </div>
@@ -154,7 +187,7 @@ export default function HomePage({ products = [], loading = false, onRefresh }) 
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
+          onClose={handleCloseProduct}
         />
       )}
 

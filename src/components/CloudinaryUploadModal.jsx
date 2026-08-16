@@ -9,12 +9,15 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
   const folderName = import.meta.env.VITE_CLOUDINARY_FOLDER;
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
+
   const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'convert' | 'history'
 
   // Upload Tab State
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({}); // { fileIndex: 'uploading' | 'success' | 'error' }
   const [uploadedUrls, setUploadedUrls] = useState([]);
+  const [failedFiles, setFailedFiles] = useState([]); // Array of { name: string, reason: string }
   const [isUploading, setIsUploading] = useState(false);
   const [uploadErrorMessage, setUploadErrorMessage] = useState('');
 
@@ -46,17 +49,48 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
     localStorage.setItem('MAKOTO_CLOUDINARY_HISTORY', JSON.stringify(updated));
   };
 
-  // Handle File Selection
+  // Handle File Selection with 10MB Validation
   const handleFileChange = (e) => {
     if (e.target.files) {
       const filesArr = Array.from(e.target.files);
-      setSelectedFiles(prev => [...prev, ...filesArr]);
-      setUploadErrorMessage('');
+      const validFiles = [];
+      const oversizedFiles = [];
+
+      filesArr.forEach(file => {
+        if (file.size > MAX_FILE_SIZE) {
+          const mbSize = (file.size / (1024 * 1024)).toFixed(2);
+          oversizedFiles.push({
+            name: file.name,
+            reason: `Vượt quá dung lượng 10MB (${mbSize} MB)`
+          });
+        } else {
+          validFiles.push(file);
+        }
+      });
+
+      if (oversizedFiles.length > 0) {
+        setFailedFiles(prev => {
+          const existingNames = new Set(prev.map(p => p.name));
+          const newEntries = oversizedFiles.filter(o => !existingNames.has(o.name));
+          return [...prev, ...newEntries];
+        });
+        setUploadErrorMessage(`Có ${oversizedFiles.length} ảnh bị từ chối do dung lượng lớn hơn 10MB.`);
+      } else {
+        setUploadErrorMessage('');
+      }
+
+      if (validFiles.length > 0) {
+        setSelectedFiles(prev => [...prev, ...validFiles]);
+      }
     }
   };
 
   // Remove single file from selected batch
   const handleRemoveFile = (index) => {
+    const fileToRemove = selectedFiles[index];
+    if (fileToRemove) {
+      setFailedFiles(prev => prev.filter(item => item.name !== fileToRemove.name));
+    }
     setSelectedFiles(prev => prev.filter((_, idx) => idx !== index));
   };
 
@@ -65,11 +99,12 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
     setSelectedFiles([]);
     setUploadedUrls([]);
     setUploadProgress({});
+    setFailedFiles([]);
     setUploadErrorMessage('');
     setCopiedStatus(false);
   };
 
-  // Execute Bulk Upload to Cloudinary
+  // Execute Bulk Upload to Cloudinary with Size Check & Error Listing
   const handleStartUpload = async () => {
     if (selectedFiles.length === 0) return;
 
@@ -77,9 +112,25 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
     setUploadErrorMessage('');
     const newUrls = [];
     const newProgress = { ...uploadProgress };
+    const newFailedList = [...failedFiles];
 
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
+
+      // Validate max file size 10MB before uploading
+      if (file.size > MAX_FILE_SIZE) {
+        const mbSize = (file.size / (1024 * 1024)).toFixed(2);
+        newProgress[i] = 'error';
+        if (!newFailedList.some(item => item.name === file.name)) {
+          newFailedList.push({
+            name: file.name,
+            reason: `Vượt quá dung lượng 10MB (${mbSize} MB)`
+          });
+        }
+        setUploadProgress({ ...newProgress });
+        continue;
+      }
+
       newProgress[i] = 'uploading';
       setUploadProgress({ ...newProgress });
 
@@ -104,20 +155,30 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
         } else {
           newProgress[i] = 'error';
           console.error('Cloudinary upload error:', data);
-          if (data.error && data.error.message) {
-            setUploadErrorMessage(`Lỗi Cloudinary: ${data.error.message}`);
+          const errReason = (data.error && data.error.message) ? data.error.message : 'Tải lên thất bại';
+          if (!newFailedList.some(item => item.name === file.name)) {
+            newFailedList.push({
+              name: file.name,
+              reason: `Lỗi Cloudinary: ${errReason}`
+            });
           }
         }
       } catch (err) {
         newProgress[i] = 'error';
         console.error('Network / Upload error:', err);
-        setUploadErrorMessage('Lỗi kết nối mạng khi tải ảnh lên.');
+        if (!newFailedList.some(item => item.name === file.name)) {
+          newFailedList.push({
+            name: file.name,
+            reason: 'Lỗi kết nối mạng'
+          });
+        }
       }
       setUploadProgress({ ...newProgress });
     }
 
     setIsUploading(false);
     setUploadedUrls(newUrls);
+    setFailedFiles(newFailedList);
 
     if (newUrls.length > 0) {
       const resultStr = newUrls.join(', ');
@@ -240,7 +301,7 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
                   Nhấp để chọn cụm ảnh (5 - 10 ảnh) hoặc kéo thả vào đây
                 </div>
                 <div className="text-[11px] text-gray-500 dark:text-gray-400">
-                  Hỗ trợ định dạng JPG, PNG, WEBP, GIF
+                  Hỗ trợ định dạng JPG, PNG, WEBP, GIF (Yêu cầu dung lượng &lt; 10MB / tệp)
                 </div>
               </div>
 
@@ -264,18 +325,25 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-h-48 overflow-y-auto p-1 custom-scrollbar">
                     {selectedFiles.map((file, idx) => {
                       const status = uploadProgress[idx];
+                      const isOversized = file.size > MAX_FILE_SIZE;
                       return (
-                        <div key={idx} className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 p-2 flex items-center space-x-2">
+                        <div key={idx} className={`relative rounded-xl overflow-hidden border p-2 flex items-center space-x-2 ${
+                          isOversized 
+                            ? 'border-rose-300 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-950/30' 
+                            : 'border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900'
+                        }`}>
                           <div className="w-9 h-9 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-800 shrink-0">
                             <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
                           </div>
                           <div className="min-w-0 flex-1 text-[11px] truncate">
                             <div className="font-medium truncate text-gray-800 dark:text-gray-200">{file.name}</div>
-                            <div className="text-[10px] text-gray-400">{(file.size / 1024).toFixed(0)} KB</div>
+                            <div className={`text-[10px] ${isOversized ? 'text-rose-500 font-bold' : 'text-gray-400'}`}>
+                              {(file.size / (1024 * 1024)).toFixed(2)} MB {isOversized && '(Quá 10MB)'}
+                            </div>
                           </div>
                           {status === 'uploading' && <RefreshCw className="w-4 h-4 text-amber-500 animate-spin shrink-0" />}
                           {status === 'success' && <Check className="w-4 h-4 text-emerald-500 shrink-0" />}
-                          {status === 'error' && <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />}
+                          {(status === 'error' || isOversized) && <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />}
                           {!status && (
                             <button
                               onClick={() => handleRemoveFile(idx)}
@@ -311,6 +379,36 @@ export default function CloudinaryUploadModal({ isOpen, onClose }) {
                       </>
                     )}
                   </button>
+                </div>
+              )}
+
+              {/* Failed Files List Box */}
+              {failedFiles.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800/80 space-y-2 animate-fadeIn">
+                  <div className="flex items-center justify-between text-xs font-bold text-rose-700 dark:text-rose-300">
+                    <div className="flex items-center space-x-1.5">
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>Danh sách {failedFiles.length} tệp ảnh bị lỗi / vượt quá 10MB:</span>
+                    </div>
+                    <button
+                      onClick={() => setFailedFiles([])}
+                      className="text-[11px] font-semibold text-rose-500 hover:underline cursor-pointer"
+                    >
+                      Xóa danh sách lỗi
+                    </button>
+                  </div>
+                  <div className="max-h-36 overflow-y-auto custom-scrollbar space-y-1.5 pt-1">
+                    {failedFiles.map((item, idx) => (
+                      <div key={idx} className="text-xs p-2 rounded-xl bg-white dark:bg-gray-900 border border-rose-100 dark:border-rose-900/50 flex items-center justify-between text-rose-600 dark:text-rose-300 shadow-sm">
+                        <span className="font-semibold truncate max-w-[60%]" title={item.name}>
+                          📄 {item.name}
+                        </span>
+                        <span className="text-[11px] font-semibold bg-rose-100 dark:bg-rose-950 px-2 py-0.5 rounded-md text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50 shrink-0">
+                          {item.reason}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Image } from 'antd';
-import { X, CheckCircle, Truck, Palette, MessageCircle, Phone, ShieldCheck, Tag, AlertCircle, ChevronLeft, ChevronRight, Eye, Info, Sparkles } from 'lucide-react';
+import { X, CheckCircle, Truck, Palette, MessageCircle, Phone, ShieldCheck, Tag, AlertCircle, ChevronLeft, ChevronRight, Eye, Info, Sparkles, Share2, Copy, Check } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs, FreeMode } from 'swiper/modules';
 import { formatVND } from '../utils/productTransformer';
@@ -29,6 +29,15 @@ export default function ProductDetailModal({ product, onClose }) {
   const [mainSwiper, setMainSwiper] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+
+  const handleCopyShareLink = () => {
+    const prodId = selectedVariant?.id || product?.variants?.[0]?.id || product?.id;
+    const shareUrl = `${window.location.origin}/?product=${encodeURIComponent(prodId)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setIsLinkCopied(true);
+    setTimeout(() => setIsLinkCopied(false), 2500);
+  };
 
   const images = product.images && product.images.length > 0 ? product.images : [product.thumbnail];
   const selectedVariant = product.variants[selectedVariantIndex] || product.variants[0];
@@ -93,6 +102,7 @@ export default function ProductDetailModal({ product, onClose }) {
         <button
           onClick={onClose}
           className="absolute top-3 right-3 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 dark:bg-black/70 hover:bg-red-600 dark:hover:bg-red-600 text-gray-700 dark:text-gray-200 hover:text-white flex items-center justify-center transition-all border border-gray-200 dark:border-gray-700 shadow-md cursor-pointer backdrop-blur-md"
+          title="Đóng modal"
         >
           <X className="w-5 h-5" />
         </button>
