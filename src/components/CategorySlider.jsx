@@ -81,27 +81,29 @@ export default function CategorySlider({
               <SwiperSlide key={index} className="group">
                 <div
                   onClick={() => onSelectCategory && onSelectCategory(catName)}
-                  className={`bg-white dark:bg-[#15151f] aspect-square rounded-2xl p-3 sm:p-4 text-center shadow-sm hover:shadow-xl transition-all cursor-pointer duration-300 transform hover:-translate-y-2 border flex flex-col items-center justify-center ${
+                  className={`bg-white dark:bg-[#15151f] aspect-square rounded-2xl p-2.5 sm:p-3 text-center shadow-sm hover:shadow-xl transition-all cursor-pointer duration-300 transform hover:-translate-y-2 border flex flex-col items-center justify-between ${
                     isSelected
                       ? 'border-red-500 ring-2 ring-red-500/40 bg-red-50/40 dark:bg-red-950/20'
                       : 'border-gray-200/80 dark:border-gray-800/80'
                   }`}
                 >
-                  <div className="relative w-full h-full flex justify-center items-center flex-col">
-                    {/* Circle Background */}
-                    <div className="absolute aspect-square rounded-full h-[70%] bg-gray-100 dark:bg-gray-800/60 opacity-80 pointer-events-none" />
+                  <div className="relative w-full h-full flex flex-col items-center justify-between">
+                    {/* Circle Background & Image Area */}
+                    <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden">
+                      <div className="absolute aspect-square rounded-full h-[80%] bg-gray-100 dark:bg-gray-800/60 opacity-80 pointer-events-none" />
+                      
+                      {/* Category Mascot / Thumbnail Image */}
+                      <img
+                        src={getOptimizedCloudinaryUrl(iconUrl, { width: 250, height: 250, crop: 'fit' })}
+                        alt={catName}
+                        loading="lazy"
+                        className="object-contain h-[75%] w-[75%] transition-all duration-300 group-hover:-translate-y-1 z-10"
+                        onError={(e) => handleImageError(e)}
+                      />
+                    </div>
                     
-                    {/* Category Mascot / Thumbnail Image */}
-                    <img
-                      src={getOptimizedCloudinaryUrl(iconUrl, { width: 250, height: 250, crop: 'fit' })}
-                      alt={catName}
-                      loading="lazy"
-                      className="object-contain h-[65%] w-[65%] transition-all duration-300 group-hover:-translate-y-1.5 z-10"
-                      onError={(e) => handleImageError(e)}
-                    />
-                    
-                    {/* Category Label */}
-                    <h3 className={`font-bold text-xs sm:text-sm z-10 truncate max-w-full mt-1.5 transition-colors ${
+                    {/* Category Label (2 lines allowed, centered) */}
+                    <h3 className={`font-bold text-[11px] sm:text-xs leading-tight z-10 line-clamp-2 max-w-full text-center h-[2.3rem] flex items-center justify-center transition-colors px-0.5 ${
                       isSelected
                         ? 'text-red-600 dark:text-red-400'
                         : 'text-gray-800 dark:text-gray-200 group-hover:text-red-600 dark:group-hover:text-red-400'

@@ -236,8 +236,8 @@ export default function ProductDetailModal({ product, onClose }) {
             
             <div className="space-y-3">
               
-              {/* Category & Badges */}
-              <div className="flex flex-wrap items-center gap-2">
+              {/* Category & Badges (Fixed height 58px reserved for 2 lines to prevent layout shift) */}
+              <div className="flex flex-wrap items-center gap-1.5 min-h-[58px] pr-10 content-start">
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50 flex items-center space-x-1">
                   <Tag className="w-3 h-3" />
                   <span>{product.category}</span>
@@ -266,26 +266,30 @@ export default function ProductDetailModal({ product, onClose }) {
                 {product.name}
               </h2>
 
-              {/* Price Display */}
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800/90 flex flex-col justify-center space-y-1">
+              {/* Price Display (Fixed height container to prevent 1-line / 2-line layout jump) */}
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800/90 min-h-[116px] flex flex-col justify-center space-y-1">
                 <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Đơn giá</div>
                 <div className={`text-2xl sm:text-3xl font-extrabold ${isVariantOutOfStock ? 'text-gray-400 line-through' : 'text-red-600 dark:gold-gradient-text'}`}>
                   {formatVND(selectedVariant.price)}
                 </div>
                 
-                {!isVariantOutOfStock && selectedVariant.wholesalePrice > 0 && (
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold pt-0.5 flex items-center space-x-1">
-                    <CheckCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>Giá sỉ: {formatVND(selectedVariant.wholesalePrice)} áp dụng từ {selectedVariant.minWholesaleQty || 10} sản phẩm</span>
-                  </div>
-                )}
+                <div className="min-h-[32px] flex items-center">
+                  {!isVariantOutOfStock && selectedVariant.wholesalePrice > 0 && (
+                    <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center space-x-1">
+                      <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>Giá sỉ: {formatVND(selectedVariant.wholesalePrice)} áp dụng từ {selectedVariant.minWholesaleQty || 10} sản phẩm</span>
+                    </div>
+                  )}
 
-                {isVariantOutOfStock && (
-                  <div className="text-xs text-rose-600 dark:text-rose-400 font-semibold pt-0.5 flex items-center space-x-1">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>Phiên bản {selectedVariant.size} hiện đang tạm hết hàng. Quý khách có thể chọn kích thước khác hoặc liên hệ xưởng đặt làm.</span>
-                  </div>
-                )}
+                  {isVariantOutOfStock && (
+                    <div className="text-xs text-rose-600 dark:text-rose-400 font-semibold flex items-start space-x-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                      <span className="line-clamp-2 leading-tight">
+                        Phiên bản {selectedVariant.size} tạm hết hàng. Quý khách vui lòng chọn mẫu khác hoặc nhắn xưởng đặt làm.
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Size & Variant Selector */}
