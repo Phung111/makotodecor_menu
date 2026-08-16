@@ -31,6 +31,8 @@ export function groupProductsByName(rows = []) {
     const isOutOfStock = rawStatus.toLowerCase().includes('hết') || rawStatus.toLowerCase().includes('het');
     const rawBanner = (row.Banner || row.banner || row.Banner_Tag || '').toString().trim();
 
+    const noteText = (row.Ghi_Chu || row.ghi_chu || row['Ghi chú'] || row.Ghi_chu || '').toString().trim();
+
     const variantItem = {
       id: row.Ma_SP || `VAR-${index}`,
       size: row.Phien_Ban_Kich_Thuoc || 'Tiêu chuẩn',
@@ -39,7 +41,7 @@ export function groupProductsByName(rows = []) {
       minWholesaleQty: row.SL_Si_Tu || '',
       status: isOutOfStock ? 'Hết hàng' : 'Hiện hành',
       isOutOfStock: isOutOfStock,
-      note: row.Ghi_Chu || '',
+      note: noteText,
       material: row.Chat_Lieu || '',
       customDesign: row.Thiet_Ke_Rieng || 'Có',
       shippingFee: row.Phi_Ship || 'Liên hệ',
@@ -59,6 +61,7 @@ export function groupProductsByName(rows = []) {
         material: row.Chat_Lieu || '',
         customDesign: row.Thiet_Ke_Rieng || 'Có',
         shippingFee: row.Phi_Ship || 'Liên hệ',
+        note: noteText,
         variants: [variantItem],
         minPrice: price,
         maxPrice: price

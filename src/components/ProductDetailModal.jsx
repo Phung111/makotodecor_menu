@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Image } from 'antd';
-import { X, CheckCircle, Truck, Palette, MessageCircle, Phone, ShieldCheck, Tag, AlertCircle, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { X, CheckCircle, Truck, Palette, MessageCircle, Phone, ShieldCheck, Tag, AlertCircle, ChevronLeft, ChevronRight, Eye, Info, Sparkles } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs, FreeMode } from 'swiper/modules';
 import { formatVND } from '../utils/productTransformer';
@@ -308,6 +308,21 @@ export default function ProductDetailModal({ product, onClose }) {
                 </div>
               </div>
 
+              {/* Highlighted Special Note Block (Located right below Kích thước) */}
+              {(selectedVariant.note || product.note) && (
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-start space-x-2.5 shadow-sm">
+                  <Sparkles className="w-4.5 h-4.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-amber-800 dark:text-amber-300 block uppercase tracking-wider text-[11px]">
+                      Ghi chú:
+                    </span>
+                    <p className="font-semibold text-xs leading-relaxed text-gray-800 dark:text-amber-100">
+                      {selectedVariant.note || product.note}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Specifications */}
               <div className="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-800/80 text-xs">
                 {selectedVariant.material && (
@@ -334,7 +349,7 @@ export default function ProductDetailModal({ product, onClose }) {
                 className="w-full py-3.5 px-4 rounded-xl text-sm font-bold bg-[#1877F2] hover:bg-[#166fe5] text-white flex items-center justify-center space-x-2 shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
               >
                 <FacebookIcon />
-                <span>{isVariantOutOfStock ? 'Nhắn Tin Facebook Đặt Trước' : 'Tư Vấn Báo Giá Qua Facebook'}</span>
+                <span>Tư Vấn Báo Giá Qua Facebook</span>
               </a>
 
               <a
@@ -344,7 +359,7 @@ export default function ProductDetailModal({ product, onClose }) {
                 className="w-full py-3.5 px-4 rounded-xl text-sm font-bold bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-600/30 flex items-center justify-center space-x-2 border border-blue-200 dark:border-blue-500/30 transition-all cursor-pointer"
               >
                 <MessageCircle className="w-5 h-5" />
-                <span>{isVariantOutOfStock ? 'Nhắn Zalo Đặt Hàng Trước' : 'Tư Vấn Báo Giá Qua Zalo'}</span>
+                <span>Tư Vấn Báo Giá Qua Zalo</span>
               </a>
             </div>
 
