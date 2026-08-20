@@ -18,10 +18,20 @@ const FacebookIcon = (props) => (
 );
 
 export default function ProductDetailModal({ product, onClose }) {
-  // Handle ESC key press to close modal
+
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [mainSwiper, setMainSwiper] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState(0);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+
+  // Handle ESC key press: Close ProductDetailModal ONLY when image preview lightbox is NOT active
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' || e.keyCode === 27) {
+      if ((e.key === 'Escape' || e.keyCode === 27) && !isPreviewOpen) {
         onClose();
       }
     };
@@ -33,21 +43,13 @@ export default function ProductDetailModal({ product, onClose }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [product, onClose]);
+  }, [product, isPreviewOpen, onClose]);
 
   if (!product) return null;
 
   const zaloPhone = import.meta.env.VITE_ZALO_PHONE;
   const facebookLink = import.meta.env.VITE_FACEBOOK_LINK;
 
-
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const [mainSwiper, setMainSwiper] = useState(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewIndex, setPreviewIndex] = useState(0);
-  const [isLinkCopied, setIsLinkCopied] = useState(false);
 
   const handleCopyShareLink = () => {
     const prodId = selectedVariant?.id || product?.variants?.[0]?.id || product?.id;
