@@ -1,8 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Database, Check, RefreshCw, FileSpreadsheet, ExternalLink } from 'lucide-react';
 
 export default function SheetConfigModal({ isOpen, onClose, currentSheetId, onSaveSheetId, onResetToMock }) {
+  // Handle ESC key press to close modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
+
 
   const [inputVal, setInputVal] = useState(currentSheetId || '');
 

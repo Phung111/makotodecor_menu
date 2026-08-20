@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Image } from 'antd';
 import { X, CheckCircle, Truck, Palette, MessageCircle, Phone, ShieldCheck, Tag, AlertCircle, ChevronLeft, ChevronRight, Eye, Info, Sparkles, Share2, Copy, Check } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -18,10 +18,28 @@ const FacebookIcon = (props) => (
 );
 
 export default function ProductDetailModal({ product, onClose }) {
+  // Handle ESC key press to close modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        onClose();
+      }
+    };
+
+    if (product) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [product, onClose]);
+
   if (!product) return null;
 
   const zaloPhone = import.meta.env.VITE_ZALO_PHONE;
   const facebookLink = import.meta.env.VITE_FACEBOOK_LINK;
+
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);

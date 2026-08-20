@@ -1,8 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UploadCloud, Copy, Check, RefreshCw, Trash2, Image as ImageIcon, X, ExternalLink, AlertCircle, Layers, FileText } from 'lucide-react';
 
 export default function CloudinaryUploadModal({ isOpen, onClose }) {
+  // Handle ESC key press to close modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
+
 
   // Cloudinary Config read directly from .env variables
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
